@@ -1,4 +1,4 @@
-CREATE DATABASE reggie;
+CREATE DATABASE reggie character set utf8mb4;
 USE reggie;
 SET FOREIGN_KEY_CHECKS=0;
 
