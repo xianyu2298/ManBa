@@ -37,4 +37,13 @@ public class GlobalExceptionHandler {
 
         return R.error("未知错误");
     }
+
+    /*
+     * 菜品套餐异常处理方法
+     * */
+    @ExceptionHandler(CustomExpection.class)
+    public R<String> expectionHandler(CustomExpection ex){
+        log.error(ex.getMessage());
+        return R.error(ex.getMessage());
+    }
 }

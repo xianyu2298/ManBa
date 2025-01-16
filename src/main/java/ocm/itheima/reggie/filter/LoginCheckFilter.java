@@ -4,6 +4,7 @@ package ocm.itheima.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import ocm.itheima.reggie.common.BaseContext;
 import ocm.itheima.reggie.common.R;
 import org.springframework.util.AntPathMatcher;
 
@@ -51,6 +52,10 @@ public class LoginCheckFilter implements Filter {
         //4.判断登录状态，若已登录直接放行
         if (request.getSession().getAttribute("employee") !=null){
             log.info("用户{}已登录",request.getSession().getAttribute("employee"));
+
+            Long empId =(Long) request.getSession().getAttribute("employee");
+            BaseContext.setCurrentId(empId);
+
             filterChain.doFilter(request,response);
             return;
         }

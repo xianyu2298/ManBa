@@ -360,3 +360,4 @@ CREATE TABLE `user` (
   `status` int(11) DEFAULT '0' COMMENT '状态 0:禁用，1:正常',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户信息';
+ALTER TABLE category ADD COLUMN is_deleted TINYINT(1) DEFAULT 0;
