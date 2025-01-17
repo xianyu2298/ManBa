@@ -7,6 +7,7 @@ import ocm.itheima.reggie.common.R;
 import ocm.itheima.reggie.dto.DishDto;
 import ocm.itheima.reggie.entity.Category;
 import ocm.itheima.reggie.entity.Dish;
+import ocm.itheima.reggie.entity.DishFlavor;
 import ocm.itheima.reggie.service.CategoryService;
 import ocm.itheima.reggie.service.DIshService;
 import ocm.itheima.reggie.service.DishFlavorService;
@@ -129,7 +130,7 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/0")
-    public R<Boolean> stoptSell(String ids){
+    public R<Boolean> stopSell(String ids){
 
         if (StringUtils.isBlank(ids)){
             return R.error("参数传递不正确！");
@@ -169,5 +170,41 @@ public class DishController {
         log.info("删除的ids为：{}",ids);
         dIshService.remove(ids);
         return R.success("菜品信息删除成功");
+    }
+
+
+    /**
+     * 根据条件查询对应菜品数据
+     * @param dish
+     * @return
+     */
+    @GetMapping("/list")
+    public R<List<DishDto>> list(Dish dish) {
+        log.info("dish:{}", dish);
+        //条件构造器
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(dish.getName()), Dish::getName, dish.getName());
+        queryWrapper.eq(null != dish.getCategoryId(), Dish::getCategoryId, dish.getCategoryId());
+        //添加条件，查询状态为1（起售状态）的菜品
+        queryWrapper.eq(Dish::getStatus,1);
+        queryWrapper.orderByDesc(Dish::getUpdateTime);
+
+        List<Dish> dishs = dIshService.list(queryWrapper);
+
+        List<DishDto> dishDtos = dishs.stream().map(item -> {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(item, dishDto);
+            Category category = categoryService.getById(item.getCategoryId());
+            if (category != null) {
+                dishDto.setCategoryName(category.getName());
+            }
+            LambdaQueryWrapper<DishFlavor> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(DishFlavor::getDishId, item.getId());
+
+            dishDto.setFlavors(dishFlavorService.list(wrapper));
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        return R.success(dishDtos);
     }
 }
