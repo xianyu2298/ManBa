@@ -28,10 +28,6 @@ public interface SetmealService extends IService<Setmeal> {
     //禁用套餐
     void updateStatusByIds(int status, List<Long> ids);
 
-
-
-
-
     // 根据ID查询套餐信息及对应的菜品
     SetmealDto getByIdWithSetmeal(Long id);
 
