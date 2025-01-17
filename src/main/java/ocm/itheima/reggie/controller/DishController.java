@@ -10,6 +10,7 @@ import ocm.itheima.reggie.entity.Dish;
 import ocm.itheima.reggie.service.CategoryService;
 import ocm.itheima.reggie.service.DIshService;
 import ocm.itheima.reggie.service.DishFlavorService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -120,5 +121,53 @@ public class DishController {
         dIshService.updateWithFlavor(dishDto);
 
         return  R.success("修改菜品成功");
+    }
+
+    /**
+     * 将商品停售
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/0")
+    public R<Boolean> stoptSell(String ids){
+
+        if (StringUtils.isBlank(ids)){
+            return R.error("参数传递不正确！");
+        }
+        boolean result = dIshService.stopSell(ids);
+        if (!result){
+            R.error("停售失败");
+        }
+        return R.success(true);
+    }
+
+    /**
+     * 将商品起售
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/1")
+    public R<Boolean> startSell(String ids){
+
+        if (StringUtils.isBlank(ids)){
+            return R.error("参数传递不正确！");
+        }
+        boolean result = dIshService.startSell(ids);
+        if (!result){
+            R.error("起售失败");
+        }
+        return R.success(true);
+    }
+
+    /**
+     * 根据id删除菜品
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public R<String> delete(String ids){
+        log.info("删除的ids为：{}",ids);
+        dIshService.remove(ids);
+        return R.success("菜品信息删除成功");
     }
 }

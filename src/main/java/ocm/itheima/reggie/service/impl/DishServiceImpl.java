@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,9 @@ import java.util.stream.Collectors;
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DIshService {
     @Autowired
     private DishFlavorService dishFlavorService;
+
+    @Autowired
+    private DishMapper dishMapper;
 
     //新增菜品，同时保存口味数据
     @Transactional
@@ -82,5 +86,66 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DI
         }).collect(Collectors.toList());
 
         dishFlavorService.saveBatch(flavors);
+    }
+
+    @Override
+    public boolean stopSell(String ids) {
+
+        List<Long> idList = Arrays.asList(ids.split(","))
+                .stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+
+        idList.forEach(id ->{
+            Dish dish = dishMapper.selectById(id);
+            Integer dishStatus = dish.getStatus();
+            if (dishStatus == 1){
+                dish.setStatus(0);
+                this.updateById(dish);
+            }else {
+                log.error(id+"停售失败！");
+            }
+        });
+
+        return true;
+    }
+
+
+
+    @Override
+    public boolean startSell(String ids) {
+        List<Long> idList = Arrays.asList(ids.split(","))
+                .stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+
+        idList.forEach(id ->{
+            Dish dish = dishMapper.selectById(id);
+            Integer dishStatus = dish.getStatus();
+            if (dishStatus == 0){
+                dish.setStatus(1);
+                this.updateById(dish);
+            }else {
+                log.error(id+"停售失败！");
+            }
+        });
+
+        return true;
+    }
+
+    /**
+     * 删除菜品
+     * @param ids
+     */
+    @Override
+    public void remove(String ids) {
+        String[] id = ids.split(",");
+        try {
+            for (int i = 0;i < id.length; i++){
+                dishMapper.deleteById(Long.valueOf(id[i]));
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }

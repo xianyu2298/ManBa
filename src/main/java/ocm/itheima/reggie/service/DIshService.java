@@ -15,4 +15,13 @@ public interface DIshService extends IService<Dish> {
 
     //更新菜品信息，同时更新口味
     public void updateWithFlavor(DishDto dishDto);
+
+    //菜品停售
+    boolean stopSell(String ids);
+    //菜品起售
+    boolean startSell(String ids);
+
+    //删除和批量删除菜品信息
+
+    public void remove(String ids);
 }
