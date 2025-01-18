@@ -17,68 +17,87 @@ import java.io.IOException;
 /**
  * 检查用户是否完成登录
  */
-@WebFilter(filterName = "LoginCheckFilter",urlPatterns = "/*")
+@WebFilter(filterName = "LoginCheckFilter", urlPatterns = "/*")
 @Slf4j
 public class LoginCheckFilter implements Filter {
-    //路径匹配器
+
+    // Spring框架提供的路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request=(HttpServletRequest) servletRequest;
-        HttpServletResponse response=(HttpServletResponse) servletResponse;
+        // 强转
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        
-        //1.获取本次请求URI
-        String requestURI = request.getRequestURI();
-        log.info("拦截到请求：{}",requestURI);
-        //定义不需要处理的请求路径
+        // 1.获取本次请求的URL
+        String requestURI = request.getRequestURI();    // /backend/index.html
+
+        log.info("拦截到请求URL：{}", requestURI);
+
+        // 2.定义不需要拦截的URL地址数组
         String[] urls = new String[]{
-                "/employee/login",
-                "/employee/logout",
-                "/backend/**",
-                "/front/**"
+                "/employee/login",  // 登录页面
+                "/employee/logout", // 退出登录
+                "/backend/**",      // 后台页面的页面的静态资源
+                "/front/**",        // 移动端页面的静态资源
+                "/user/login",      // 用户登录
+                "/user/sendMsg",// 发送登录验证码
         };
 
-        //2.判断本次请求是否处理
-        boolean check = check(urls, requestURI);
+        // 3.判断本次请求URL是否需要拦截
+        Boolean check = check(urls, requestURI);
 
-        //3.若不需要处理则直接放行
+        // 4.如果check为true则不需要处理，直接放行
         if (check) {
-            log.info("本次请求{}不需要处理",requestURI);
-            filterChain.doFilter(request,response);
+            log.info("本次请求{}不需要处理", requestURI);
+            filterChain.doFilter(request, response);
             return;
         }
 
-        //4.判断登录状态，若已登录直接放行
-        if (request.getSession().getAttribute("employee") !=null){
-            log.info("用户{}已登录",request.getSession().getAttribute("employee"));
+        // 5.如果需要处理，则判断B端员工是否登录
+        if (request.getSession().getAttribute("employee") != null) {
+            // 能进入说明已经登录，直接放行
+            Long id = (Long) request.getSession().getAttribute("employee");
+            log.info("B端员工{}已登录", id);
 
-            Long empId =(Long) request.getSession().getAttribute("employee");
-            BaseContext.setCurrentId(empId);
+            // 把当前登录用户的ID保存到ThreadLocal中
+            BaseContext.setCurrentId(id);
 
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
             return;
         }
+
+        // 6.如果需要处理，判断C端用户是否登录
+        if (request.getSession().getAttribute("user") != null) {
+            // 能进入说明已经登录，直接放行
+            Long userId = (Long) request.getSession().getAttribute("user");
+            log.info("邮箱用户{}已登录", userId);
+
+            // 把当前登录用户的ID保存到ThreadLocal中
+            BaseContext.setCurrentId(userId);
+
+            // 放行
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         log.info("用户未登录");
 
-        //5.若未登录则返回登录结果，通过输出流方式向客户端页面相应数据
+        // 7.走到这里就是没登录
+        // 向浏览器响应一个流，让前端读到R里面的数据
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
-        return;
     }
 
-    /**
-     * 路径匹配，检查本次请求是否需要放行
-     * @param urls
-     * @param requestURI
-     * @return
-     */
-    public boolean check(String[] urls,String requestURI){
-        for (String url : urls){
-            boolean match = PATH_MATCHER.match(url,requestURI);
-            if (match){
+    // 核查请求URL是否在放行URL数组中，检查本次请求是否需要放行
+    private Boolean check(String[] urls, String requestURI) {
+        for (String url : urls) {
+            boolean match = PATH_MATCHER.match(url, requestURI);
+            if (match) {
                 return true;
             }
         }
+        // 循环完了都匹配不上就返回false
         return false;
     }
 }

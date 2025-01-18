@@ -7,11 +7,13 @@ package ocm.itheima.reggie.common;
 public class BaseContext {
     private static ThreadLocal<Long>threadLocal=new ThreadLocal<>();
 
-    public static void  setCurrentId(Long id){
+    // 保存当前登录用户的ID
+    public static void setCurrentId(Long id) {
         threadLocal.set(id);
     }
 
-    public static Long getCurrentId(){
+    // 获取当前登录用户的ID
+    public static Long getCurrentId() {
         return threadLocal.get();
     }
 }

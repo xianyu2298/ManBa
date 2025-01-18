@@ -1,6 +1,13 @@
 server:
   port: 8080
 spring:
+
+  mail:
+    host: smtp.qq.com
+    # 你的QQ邮箱，这里为发件人，填自己的即可
+    username: 2298266523@qq.com
+    # 你的QQ邮箱授权码
+    password: kicioxqetinndjde
   application:
     #应用名称可选
     name: reggie_take_out
