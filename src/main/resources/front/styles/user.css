@@ -238,3 +238,7 @@
   color: #333333;
   line-height: 50rem;
 }
+
+.divName, .divPhone, .title, .dishList span {
+  color: black !important;  /* 强制设置字体颜色 */
+}

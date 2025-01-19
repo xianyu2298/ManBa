@@ -102,4 +102,12 @@ public class ShoppingCartController {
 
         return R.success("清空购物车成功");
     }
+    // 购物车商品减一
+    @PostMapping("/sub")
+    public R<String> sub(@RequestBody ShoppingCart shoppingCart) {
+        if (shoppingCartService.sub(shoppingCart)) {
+            return R.success("删除成功");
+        }
+        return R.error("删除失败");
+    }
 }
