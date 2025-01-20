@@ -28,10 +28,10 @@
             <el-input placeholder=" 请输入电子邮箱" v-model="form.email" maxlength='50'/>
             </el-input>
             <div class="divSplit"></div>
-            <el-input placeholder=" 请输入验证码" v-model="form.code" maxlength='20'/>
+            <el-input placeholder=" 请输入肘击码" v-model="form.code" maxlength='20'/>
             </el-input>
 
-            <span @click='getCode' v-show="show">获取验证码</span>
+            <span @click='getCode' v-show="show">获取肘击码</span>
             <!--用户点击完【获取验证码】后倒计时60s-->
             <span v-show="!show" class="count">重新获取（{{count}} s）</span>
 
@@ -86,7 +86,7 @@
                         this.msgFlag = false
                         // this.form.code = (Math.random() * 1000000).toFixed(0)
                         const res = sendMsgApi({email: this.form.email})    // 向后端发送用户的邮箱，让后端给用户发送验证码邮件
-                        this.$notify({type: 'success', message: '验证码发送成功'})
+                        this.$notify({type: 'success', message: '肘击码发送成功'})
 
                         if (!this.timer) {
                             this.count = TIME_COUNT;    // 设置倒计时时长
@@ -124,7 +124,7 @@
                     if (!this.form.email) {
                         this.$notify({type: 'warning', message: '请输入电子邮箱'});
                     } else if (!this.form.code) {
-                        this.$notify({type: 'warning', message: '请输入验证码'});
+                        this.$notify({type: 'warning', message: '请输入肘击码'});
                     }
                 }
             }

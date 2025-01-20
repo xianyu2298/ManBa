@@ -2,6 +2,7 @@ package ocm.itheima.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ocm.itheima.reggie.common.BaseContext;
 import ocm.itheima.reggie.common.CustomExpection;
 import ocm.itheima.reggie.entity.User;
 import ocm.itheima.reggie.mapper.UserMapper;
@@ -43,7 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String code = map.get("code");
         // 验证邮箱和验证码是否为空，如果为空则直接登录失败
         if (email.isEmpty() || code.isEmpty()) {
-            throw new CustomExpection("邮箱或验证码不能为空");
+            throw new CustomExpection("邮箱或肘击码不能为空");
         }
 
         // 如果邮箱和验证码不为空，前往调用数据层查询数据库有无该用户
@@ -52,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         // 比对用户输入的验证码和真实验证码，错了直接登录失败
         if (!code.equals(trueCode)) {
-            throw new CustomExpection("验证码错误");
+            throw new CustomExpection("肘击码错误");
         }
 
         // 验证码匹配，开始调用数据库查询
@@ -70,5 +71,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 最后把这个登录用户存到session保存作用域中，表示已登录，让拦截器放行
         session.setAttribute("user", user.getId());
         return user;
+    }
+
+    // 移动端用户退出登录
+    @Override
+    public Boolean logout(HttpSession session) {
+        Long userId = BaseContext.getCurrentId();
+        User user = this.getById(userId);
+        String email = user.getEmail();
+        // 清除Session保存作用域中保存的数据
+        session.removeAttribute("user");
+        session.removeAttribute(email);
+        return true;
     }
 }

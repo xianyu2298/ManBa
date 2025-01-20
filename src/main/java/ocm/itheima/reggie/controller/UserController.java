@@ -27,9 +27,9 @@ public class UserController {
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody User user, HttpSession session) throws MessagingException {
         if (userService.sendMsg(user, session)) {
-            return R.success("验证码发送成功");
+            return R.success("肘击码发送成功");
         }
-        return R.error("验证码发送失败");
+        return R.error("肘击码发送失败");
     }
 
     // 移动端用户登录登录
@@ -37,5 +37,14 @@ public class UserController {
     public R<User> login(@RequestBody Map<String, String> map, HttpSession session) {
         User user = userService.login(map, session);
         return R.success(user);
+    }
+
+    // 移动端用户退出登录
+    @PostMapping("/loginout")
+    public R<String> logout(HttpSession session) {
+        if (userService.logout(session)) {
+            return R.success("退出成功");
+        }
+        return R.error("退出失败");
     }
 }

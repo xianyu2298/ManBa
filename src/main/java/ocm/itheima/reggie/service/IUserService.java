@@ -14,4 +14,7 @@ public interface IUserService extends IService<User> {
 
     // 移动端用户登录
     User login(Map<String, String> map, HttpSession session);
+
+    // 移动端用户退出登录
+    Boolean logout(HttpSession session);
 }

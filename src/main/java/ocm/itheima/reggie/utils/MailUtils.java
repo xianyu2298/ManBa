@@ -56,13 +56,13 @@ public class MailUtils {
         InternetAddress to = new InternetAddress(email);
         message.setRecipient(Message.RecipientType.TO, to);
         // 4.3 设置邮件标题
-        message.setSubject("【瑞吉外卖】邮箱登录验证码");
+        message.setSubject("【曼巴外卖】邮箱登录验证码");
         // 4.4 设置邮件的正文
-        message.setContent("尊敬的用户：您好！\r\n您的登录验证码为：" + code + "（有效期为一分钟，请勿告知他人）", "text/html;charset=UTF-8");
+        message.setContent("尊敬的用户：您好！\r\n您的登录验证码为：" + code + "（有效期为一分钟）", "text/html;charset=UTF-8");
 
         // 5.最后，发送邮件
         Transport.send(message);
-        log.info("验证码：{}",code);
+        log.info("肘击码：{}",code);
     }
 
     // 获取六位随机验证码
